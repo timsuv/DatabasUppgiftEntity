@@ -53,7 +53,7 @@ namespace DatabasUppgiftEntity
                             var position = context.Employee.Where(x => x.Position == "Teacher").ToList();
                             foreach (var employee in position)
                             {
-                                Console.WriteLine($"ID: {employee.Id}, Name: {employee.Name}, Role: {employee.Position}");
+                                Console.WriteLine($"ID: {employee.Id}, Name: {employee.Name}, Role: {employee.Position}");  
                             }
                         }
 
