@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DatabasUppgiftEntity.Models;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +10,8 @@ namespace DatabasUppgiftEntity
 {
     internal class Menu
     {
+        FindMethods findMethods = new FindMethods();
+
         public void MenuChoice()
         {
             Console.WriteLine("Choose between different options:");
@@ -15,14 +19,14 @@ namespace DatabasUppgiftEntity
             Console.WriteLine("2. Print the students list");
             Console.WriteLine("3. Print the students list by class");
             Console.WriteLine("4. Print the grades assigned the last month");
-            Console.WriteLine("5. Print information about a special class grades");
+            Console.WriteLine("5. Print information about a special class grades and their average grade");
             Console.WriteLine("6. Add a new student");
             Console.WriteLine("7. Add a new staff");
 
             while (true)
             {
 
-                Console.WriteLine("Enter a number (1-10) or 0 to exit:");
+                Console.WriteLine("Enter a number (1-8) or 0 to exit:");
 
                 var input = int.TryParse(Console.ReadLine(), out var choice);
                 if (!input)
@@ -39,42 +43,27 @@ namespace DatabasUppgiftEntity
                 switch (choice)
                 {
                     case 1:
-                        using (var context = new MyDBCOntext())
-                        {
-                            var staff = context.Employee.ToList();
-                            foreach (var employee in staff)
-                            {
-                                Console.WriteLine($"ID: {employee.Id}, Name: {employee.Name}, Role: {employee.Position}");
-                            }
-                        } 
-                        using (var context = new MyDBCOntext())
-                        {
-                            var staff = context.Employee.ToList();
-                            var position = context.Employee.Where(x => x.Position == "Teacher").ToList();
-                            foreach (var employee in position)
-                            {
-                                Console.WriteLine($"ID: {employee.Id}, Name: {employee.Name}, Role: {employee.Position}");  
-                            }
-                        }
+                        findMethods.PrintStaffList();
 
                         break;
                     case 2:
-                        Console.WriteLine("You chose 2");
+                        findMethods.PrintStudentList();
                         break;
                     case 3:
-                        Console.WriteLine("You chose 3");
+
+                       findMethods.PrintStudentList();
                         break;
                     case 4:
-                        Console.WriteLine("You chose 4");
+                       findMethods.PrintGradesLastMonth();
                         break;
                     case 5:
-                        Console.WriteLine("You chose 5");
+                        findMethods.PrintAverageGrades();
                         break;
                     case 6:
-                        Console.WriteLine("You chose 6");
+                        findMethods.AddStudent();
                         break;
                     case 7:
-                        Console.WriteLine("You chose 7");
+                       findMethods.AddEmployee();
                         break;
 
                     default:
@@ -83,5 +72,6 @@ namespace DatabasUppgiftEntity
                 }
             }
         }
+        
     }
 }
