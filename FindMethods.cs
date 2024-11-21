@@ -183,7 +183,7 @@ namespace DatabasUppgiftEntity
                 }
             }
         }
-        string GetGrade(double average)
+        public string GetGrade(double average)
         {
             if (average >= 4.5) return "A-";
             if (average >= 4.0) return "B+";
