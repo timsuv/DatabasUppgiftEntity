@@ -26,13 +26,14 @@ namespace DatabasUppgiftEntity
                 }
 
             }
-            else
+            else //if the user wants to see a specific position, he writes no and then chooses the position
             {
                 using (var context = new MyDBCOntext())
                 {
                     Console.WriteLine("Write the position you want to search: (Teacher/Admin/Principle)");
                     var userPosition = Console.ReadLine();
-                    var position = context.Employee.Where(x => x.Position == userPosition).ToList();
+                    var position = context.Employee
+                    .Where(x => x.Position == userPosition).ToList();
                     if (position.Count == 0)
                     {
                         Console.WriteLine("No position found");
@@ -55,12 +56,11 @@ namespace DatabasUppgiftEntity
             using (var context = new MyDBCOntext())
             {
                 var students = context.Student.ToList();
-                Console.WriteLine("Do you want to print the list in an ascending order or descending" +
-                    "(Type ASC/DSC)");
+                Console.WriteLine("Do you want to print the list in an ascending order or descending (Type ASC/DSC)");
                 var answer1 = Console.ReadLine();
                 if (answer1.ToLower() == "asc")
                 {
-                    students = [.. students.OrderBy(s => s.Name)];
+                    students = students.OrderBy(s => s.Name).ToList();
                     foreach (var student in students)
                     {
                         Console.WriteLine($"Name: {student.Name}, Class: {student.Class}");
@@ -68,7 +68,7 @@ namespace DatabasUppgiftEntity
                 }
                 else
                 {
-                    students = [.. students.OrderByDescending(s => s.Name)];
+                    students = students.OrderByDescending(s => s.Name).ToList();
                     foreach (var student in students)
                     {
                         Console.WriteLine($"Name: {student.Name}, Class: {student.Class}");
@@ -98,7 +98,7 @@ namespace DatabasUppgiftEntity
                     }
                     else
                     {
-                        students = [.. students.OrderByDescending(s => s.Name)];
+                        students = [.. students.OrderByDescending(s => s.Name)]; //shorter way to order the list suggested by the IDE
                         foreach (var student in students)
                         {
                             Console.WriteLine($"Name: {student.Name}, Class: {student.Class}");
@@ -117,7 +117,7 @@ namespace DatabasUppgiftEntity
             {
                 var grades = context.Grade
                     .Where(x => x.DateAssigned.Month == DateTime.Now.Month - 1)
-                    .Include(x => x.Student)
+                    .Include(x => x.Student) //Including the student table to get the student name (left join in a raw query)
                     .Select(x => new
                     {
                         Name = x.Student.Name,
@@ -155,7 +155,7 @@ namespace DatabasUppgiftEntity
                 }
                 else
                 {
-                    var gradeValues = new Dictionary<string, double>
+                    var gradeValues = new Dictionary<string, double> //Dictionary to convert the grade value to a double to then process the average
                                 {
                                     { "A", 5.0 },
                                     { "B", 4.0 },
@@ -168,7 +168,7 @@ namespace DatabasUppgiftEntity
                     double sum = 0;
                     foreach (var record in grades)
                     {
-                        if (gradeValues.TryGetValue(record.GradeValue, out double gradeValue))
+                        if (gradeValues.TryGetValue(record.GradeValue, out double gradeValue)) //If the grade value is found in the dictionary, add it to the sum
                         {
                             sum += gradeValue;
                             Console.WriteLine($"Student: {record.Name}, Course: {record.Class}, Grade: {record.GradeValue}");
@@ -176,15 +176,16 @@ namespace DatabasUppgiftEntity
                     }
                     double average = sum / grades.Count;
 
-                    {
-                        Console.WriteLine($"The average grade for class {userClass} is {GetGrade(average)}");
-                    }
+
+                    Console.WriteLine($"The average grade for class {userClass.ToUpper()} is {GetGrade(average)}");//GetGrade method to convert the average to a grade value in letters
+
 
                 }
             }
         }
-        public string GetGrade(double average)
+        public string GetGrade(double average) //Converts the average grade to a letter grade
         {
+            if (average == 5.0) return "A";
             if (average >= 4.5) return "A-";
             if (average >= 4.0) return "B+";
             if (average >= 3.5) return "B";
@@ -211,7 +212,7 @@ namespace DatabasUppgiftEntity
                     PersonalNumber = personalNumber,
                     Class = studentClass
                 };
-
+                //Try catch to catch any exceptions that might occur when adding a new student
                 try
                 {
                     context.Student.Add(student);
@@ -239,6 +240,7 @@ namespace DatabasUppgiftEntity
                     Name = staffName,
                     Position = staffPosition
                 };
+                //Try catch to catch to check if the employee was added successfully
                 try
                 {
                     context.Employee.Add(newStaff);
