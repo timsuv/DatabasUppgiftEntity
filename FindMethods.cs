@@ -118,16 +118,19 @@ namespace DatabasUppgiftEntity
                 var grades = context.Grade
                     .Where(x => x.DateAssigned.Month == DateTime.Now.Month - 1)
                     .Include(x => x.Student) //Including the student table to get the student name (left join in a raw query)
+                    .Include(x => x.Course) //Including the course table to get the course name (left join in a raw query)
                     .Select(x => new
                     {
                         Name = x.Student.Name,
                         Class = x.Student.Class,
                         GradeValue = x.GradeValue,
-                        DateAssigned = x.DateAssigned
+                        DateAssigned = x.DateAssigned,
+                        CourseName = x.Course.Name
+
                     }).ToList();
                 foreach (var record in grades)
                 {
-                    Console.WriteLine($"Student: {record.Name}, Course: {record.Class}, Grade: {record.GradeValue}, Grade Assigned: {record.DateAssigned}");
+                    Console.WriteLine($"Student: {record.Name}, Class: {record.Class}, Course Name: {record.CourseName}, Grade: {record.GradeValue}, Grade Assigned: {record.DateAssigned}");
                 }
 
             }
@@ -171,7 +174,7 @@ namespace DatabasUppgiftEntity
                         if (gradeValues.TryGetValue(record.GradeValue, out double gradeValue)) //If the grade value is found in the dictionary, add it to the sum
                         {
                             sum += gradeValue;
-                            Console.WriteLine($"Student: {record.Name}, Course: {record.Class}, Grade: {record.GradeValue}");
+                            Console.WriteLine($"Student: {record.Name}, Class: {record.Class}, Grade: {record.GradeValue}");
                         }
                     }
                     double average = sum / grades.Count;

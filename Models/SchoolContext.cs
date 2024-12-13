@@ -25,13 +25,15 @@ public partial class SchoolContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Data Source=localhost;Initial Catalog=School;Integrated Security=True;Encrypt=True;TrustServerCertificate=True");
+        => optionsBuilder.UseSqlServer("Data Source=localhost;Initial Catalog=School;Integrated Security=True;Encrypt=True;Trust Server Certificate=True;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.UseCollation("Latin1_General_CI_AS");
+
         modelBuilder.Entity<Course>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Course__3214EC070D6D10D7");
+            entity.HasKey(e => e.Id).HasName("PK__Course__3214EC07E7B9CAFD");
 
             entity.ToTable("Course");
 
@@ -46,11 +48,10 @@ public partial class SchoolContext : DbContext
 
         modelBuilder.Entity<Employee>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Employee__3214EC07F11EDBF8");
+            entity.HasKey(e => e.Id).HasName("PK__Employee__3214EC07D9C29BA0");
 
             entity.ToTable("Employee");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .IsUnicode(false);
@@ -61,15 +62,18 @@ public partial class SchoolContext : DbContext
 
         modelBuilder.Entity<Grade>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Grade__3214EC07EBC65174");
+            entity.HasKey(e => e.Id).HasName("PK__Grade__3214EC0731657202");
 
             entity.ToTable("Grade");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.GradeValue)
                 .HasMaxLength(1)
                 .IsUnicode(false)
                 .IsFixedLength();
+
+            entity.HasOne(d => d.Course).WithMany(p => p.Grades)
+                .HasForeignKey(d => d.CourseId)
+                .HasConstraintName("FK_Grade_Course");
 
             entity.HasOne(d => d.Student).WithMany(p => p.Grades)
                 .HasForeignKey(d => d.StudentId)
@@ -82,11 +86,11 @@ public partial class SchoolContext : DbContext
 
         modelBuilder.Entity<Student>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Student__3214EC07DD3B707C");
+            entity.HasKey(e => e.Id).HasName("PK__Student__3214EC076C685A67");
 
             entity.ToTable("Student");
 
-            entity.HasIndex(e => e.PersonalNumber, "UQ__Student__AC2CC42E1606967B").IsUnique();
+            entity.HasIndex(e => e.PersonalNumber, "UQ__Student__AC2CC42EFCF02821").IsUnique();
 
             entity.Property(e => e.Class)
                 .HasMaxLength(50)
