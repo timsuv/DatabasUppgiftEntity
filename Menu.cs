@@ -14,47 +14,46 @@ namespace DatabasUppgiftEntity
 
         public void MenuChoice()
         {
-            Console.WriteLine("Choose between different options:");
-            Console.WriteLine("1. Print the staff list");
-            Console.WriteLine("2. Print the students list");
-            Console.WriteLine("3. Print the students list by class");
-            Console.WriteLine("4. Print the grades assigned the last month");
-            Console.WriteLine("5. Print information about a special class grades and their average grade");
-            Console.WriteLine("6. Add a new student");
-            Console.WriteLine("7. Add a new staff");
+            Console.WriteLine("Välj mellan olika alternativ:");
+            Console.WriteLine("1. Skriv ut personal listan");
+            Console.WriteLine("2. Skriv ut elev listan");
+            Console.WriteLine("3. Skriv ut elev listan efter klass");
+            Console.WriteLine("4. Skriv ut betygen som tilldelades förra månaden");
+            Console.WriteLine("5. Skriv ut information om en specifik klass betyg och deras medelbetyg");
+            Console.WriteLine("6. Lägg till en ny elev");
+            Console.WriteLine("7. Lägg till en ny personal");
+            Console.WriteLine("8. Skriv ut information om lärare");
+            Console.WriteLine("9. Skriv ut information om aktiva kurser");
 
             while (true)
             {
-
-                Console.WriteLine("Enter a number (1-8) or 0 to exit:");
+                Console.WriteLine("Ange ett nummer (1-8) eller 0 för att avsluta:");
 
                 var input = int.TryParse(Console.ReadLine(), out var choice);
                 if (!input)
                 {
-                    Console.WriteLine("Invalid input. Please enter a number.");
+                    Console.WriteLine("Ogiltig inmatning. Vänligen ange ett nummer.");
                     continue;
                 }
 
                 if (choice == 0)
                 {
-                    Console.WriteLine("Exiting the program...");
+                    Console.WriteLine("Avslutar programmet...");
                     break;
                 }
                 switch (choice)
                 {
                     case 1:
                         findMethods.PrintStaffList();
-
                         break;
                     case 2:
                         findMethods.PrintStudentList();
                         break;
                     case 3:
-
-                       findMethods.PrintStudentList();
+                        findMethods.PrintStudentByClass();
                         break;
                     case 4:
-                       findMethods.PrintGradesLastMonth();
+                        findMethods.PrintGradesLastMonth();
                         break;
                     case 5:
                         findMethods.PrintAverageGrades();
@@ -63,15 +62,20 @@ namespace DatabasUppgiftEntity
                         findMethods.AddStudent();
                         break;
                     case 7:
-                       findMethods.AddEmployee();
+                        findMethods.AddEmployee();
+                        break;
+                    case 8:
+                        findMethods.PrintTeachersCount();
+                        break;
+                    case 9:
+                        findMethods.PrintActiveCourses();
                         break;
 
                     default:
-                        Console.WriteLine("Invalid choice");
+                        Console.WriteLine("Ogiltigt val");
                         break;
                 }
             }
         }
-        
     }
 }
