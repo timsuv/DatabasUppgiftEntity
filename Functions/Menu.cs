@@ -25,7 +25,7 @@ namespace DatabasUppgiftEntity.Functions
                 Console.WriteLine(logo);
                 Console.WriteLine("Välj mellan olika alternativ:");
                 Console.WriteLine("[1] Information relaterad till eleverna");
-                Console.WriteLine("[2] Information relaterad till persoanlen");
+                Console.WriteLine("[2] Information relaterad till personalen");
                 Console.WriteLine("[3] Information relaterad till betyg och kurser");
                 Console.WriteLine("[4] Personal och student hanterare");
                 Console.WriteLine("[0] Avsluta programmet");
@@ -71,7 +71,7 @@ namespace DatabasUppgiftEntity.Functions
                 Console.Clear();
                 Console.WriteLine("Elevmeny:");
                 Console.WriteLine("[1] Skriv ut listan över elever");
-                Console.WriteLine("[2] Skriv ut listan över elever efter klass");
+                Console.WriteLine("[2] Skriv ut listan över elever efter klass [NEW FEATURE]");
                 Console.WriteLine("[0] Tillbaka till huvudmenyn");
 
                 Console.Write("\nAnge ett nummer (0-2): ");
@@ -108,7 +108,7 @@ namespace DatabasUppgiftEntity.Functions
                 Console.Clear();
                 Console.WriteLine("Personalmeny:");
                 Console.WriteLine("[1] Skriv ut listan över personalen");
-                Console.WriteLine("[2] Skriv ut information om lärare");
+                Console.WriteLine("[2] Skriv ut information om lärare[NEW FEATURE]");
                 Console.WriteLine("[0] Tillbaka till huvudmenyn");
 
                 Console.Write("\nAnge ett nummer (0-2): ");
@@ -146,7 +146,7 @@ namespace DatabasUppgiftEntity.Functions
                 Console.WriteLine("Betyg och kurser meny:");
                 Console.WriteLine("[1] Skriv ut betygen som tilldelades förra månaden");
                 Console.WriteLine("[2] Skriv ut information om en specifik klass betyg och deras medelbetyg");
-                Console.WriteLine("[3] Skriv ut information om aktiva kurser");
+                Console.WriteLine("[3] Skriv ut information om aktiva kurser [NEW FEATURE]");
                 Console.WriteLine("[0] Tillbaka till huvudmenyn");
 
                 Console.Write("\nAnge ett nummer (0-3): ");
@@ -187,9 +187,10 @@ namespace DatabasUppgiftEntity.Functions
                 Console.WriteLine("Hanteringsmeny:");
                 Console.WriteLine("[1] Lägg till en ny elev");
                 Console.WriteLine("[2] Lägg till en ny personal");
+                Console.WriteLine("[3] Ändra students information [NEW FEATURE]");
                 Console.WriteLine("[0] Tillbaka till huvudmenyn");
 
-                Console.Write("\nAnge ett nummer (0-2): ");
+                Console.Write("\nAnge ett nummer (0-3): ");
                 if (int.TryParse(Console.ReadLine(), out int choice))
                 {
                     switch (choice)
@@ -201,6 +202,9 @@ namespace DatabasUppgiftEntity.Functions
                             break;
                         case 2:
                             schoolManager.AddEmployee();
+                            break;
+                        case 3:
+                            schoolManager.ChangeStudentInfo();
                             break;
                         default:
                             Console.WriteLine("Ogiltigt val.");
