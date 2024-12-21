@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DatabasUppgiftEntity
+namespace DatabasUppgiftEntity.Functions
 {
     internal class FindMethods
     {
@@ -30,7 +30,7 @@ namespace DatabasUppgiftEntity
             {
                 using (var context = new SkolDatabasContext())
                 {
-                    Console.WriteLine("Skriv den position du vill söka: (Lärare/Admin/Rektor)");
+                    Console.WriteLine("Skriv den position du vill söka: (Lärare/Administratör/Rektor)");
                     var userPosition = Console.ReadLine();
                     var position = context.Employees
                     .Where(x => x.Position == userPosition).ToList();
@@ -80,7 +80,7 @@ namespace DatabasUppgiftEntity
         {
             using (var context = new SkolDatabasContext())
             {
-                Console.WriteLine("Välj från vilken klass du vill skriva ut eleverna (Skriv A/B/C)");
+                Console.WriteLine("Välj från vilken klass du vill skriva ut eleverna (Skriv 3A/3B/3C)");
                 var userClass = Console.ReadLine();
                 if (userClass.ToLower() == "3a" || userClass.ToLower() == "3b" || userClass.ToLower() == "3c")
                 {
@@ -121,11 +121,11 @@ namespace DatabasUppgiftEntity
                     .Include(x => x.Course) //Inkluderar kurstabellen för att få kursens namn (vänster join i en råfråga)
                     .Select(x => new
                     {
-                        FirstName = x.Student.FirstName,
-                        LastName = x.Student.LastName,
+                        x.Student.FirstName,
+                        x.Student.LastName,
                         Class = x.Student.ClassName,
-                        GradeValue = x.GradeValue,
-                        DateAssigned = x.DateAssigned,
+                        x.GradeValue,
+                        x.DateAssigned,
                         CourseName = x.Course.Name
 
                     }).ToList();
@@ -148,10 +148,10 @@ namespace DatabasUppgiftEntity
                 .Where(x => x.Student.ClassName == userClass)
                 .Select(x => new
                 {
-                    FirstName = x.Student.FirstName,
-                    LastName = x.Student.LastName,
+                    x.Student.FirstName,
+                    x.Student.LastName,
                     Class = x.Student.ClassName,
-                    GradeValue = x.GradeValue
+                    x.GradeValue
                 }).ToList();
 
                 if (grades.Count == 0)
@@ -171,23 +171,48 @@ namespace DatabasUppgiftEntity
                                     };
 
                     double sum = 0;
+                    string lowestGrade = null;
+                    double lowestGradeValue = double.MaxValue;
+                    string highestGrade = null;
+                    double highestGradeValue = double.MinValue;
                     foreach (var record in grades)
                     {
                         if (gradeValues.TryGetValue(record.GradeValue, out double gradeValue)) //Om betygsvärdet hittas i dictionaryn, lägg till det i summan
                         {
                             sum += gradeValue;
+                            if (gradeValue < lowestGradeValue)
+                            {
+                                lowestGradeValue = gradeValue;
+                                lowestGrade = record.GradeValue;
+                            }
+
+                            if (gradeValue > highestGradeValue)
+                            {
+                                highestGradeValue = gradeValue;
+                                highestGrade = record.GradeValue;
+                            }
+
                             Console.WriteLine($"Student: {record.FirstName} {record.LastName}, Klass: {record.Class}, Betyg: {record.GradeValue}");
                         }
                     }
                     double average = sum / grades.Count;
 
 
-                    Console.WriteLine($"Medelbetyget för klass {userClass.ToUpper()} är {GetGrade(average)}");//GetGrade-metod för att konvertera medelvärdet till ett betygsvärde i bokstäver
+                    Console.WriteLine($"\nMedelbetyget för klass {userClass.ToUpper()} är {GetGrade(average)}");//GetGrade-metod för att konvertera medelvärdet till ett betygsvärde i bokstäver
 
 
+                    if (lowestGrade != null)
+                    {
+                        Console.WriteLine($"\nLägsta betyget i klassen är {lowestGrade}");
+                    }
+                    if( highestGrade != null)
+                    {
+                        Console.WriteLine($"\nHögsta betyget i klassen är {highestGrade}");
+                    }
                 }
             }
         }
+
         public string GetGrade(double average) //Konverterar medelbetyget till ett bokstavsbetyg
         {
             if (average == 5.0) return "A";
@@ -200,76 +225,7 @@ namespace DatabasUppgiftEntity
             if (average >= 1.5) return "D";
             return "F";
         }
-        public void AddStudent()
-        {
-            using (var context = new SkolDatabasContext())
-            {
-                Console.WriteLine("Skriv studentens förnamn");
-                var firstName = Console.ReadLine();
-                Console.WriteLine("Skriv studentens efternamn");
-                var lastName = Console.ReadLine();
-                Console.WriteLine("Skriv studentens personnummer");
-                var personalNumber = Console.ReadLine();
-                Console.WriteLine("Skriv studentens klass");
-                var studentClass = Console.ReadLine();
-                var student = new Student
-                {
-                    FirstName = firstName,
-                    LastName = lastName,
-                    PersonalNumber = personalNumber,
-                    ClassName = studentClass
-                };
-                //Try catch för att fånga eventuella undantag som kan uppstå när en ny student läggs till
-                try
-                {
-                    context.Students.Add(student);
-                    context.SaveChanges();
-                    Console.WriteLine($"Du har framgångsrikt lagt till en ny student {firstName} {lastName}, {personalNumber}, {studentClass}");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Misslyckades med att lägga till en ny student");
-                    Console.WriteLine($"Felinformation: {e.Message}");
 
-                }
-            }
-        }
-        public void AddEmployee()
-        {
-            using (var context = new SkolDatabasContext())
-            {
-                Console.WriteLine("Skriv den nya personalens förnamn:");
-                string staffFirstName = Console.ReadLine();
-                Console.WriteLine("Skriv den nya personalens efternamn:");
-                string staffLastName = Console.ReadLine();
-                Console.WriteLine("Skriv den nya personalens position:");
-                string staffPosition = Console.ReadLine();
-                Console.WriteLine("Vilken lön?");
-                decimal staffSalary = decimal.Parse(Console.ReadLine());
-                var newStaff = new Employee
-                {
-                    FirstName = staffFirstName,
-                    LastName = staffLastName,
-                    Position = staffPosition,
-                    Salary = staffSalary
-
-                };
-                //Try catch för att kontrollera om anställdes lades till 
-                try
-                {
-                    context.Employees.Add(newStaff);
-                    context.SaveChanges();
-                    Console.WriteLine($"Du har framgångsrikt lagt till en ny personal {staffFirstName} {staffLastName}, {staffPosition}");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Misslyckades med att lägga till personalen");
-                    Console.WriteLine($"Felinformation: {e.Message}");
-                }
-
-
-            }
-        }
 
         public void PrintTeachersCount()
         {
@@ -295,7 +251,7 @@ namespace DatabasUppgiftEntity
                 .Where(x => x.Active == true)
                 .ToList();
 
-            Console.WriteLine($"Här är lista på alla aktiva kurser på våran skolan just nu");
+            Console.WriteLine($"Här är lista på alla aktiva kurser på våran skolan just nu\n");
             foreach (var activeCourse in activeCourses)
             {
                 Console.WriteLine($"Kursnamn: {activeCourse.Name}");
@@ -303,7 +259,7 @@ namespace DatabasUppgiftEntity
 
             while (true)
             {
-                Console.WriteLine("Vill du se listan över inaktivar kurser? (ja/nej)");
+                Console.WriteLine("Vill du se listan över inaktiva kurser? (ja/nej)");
                 string answer = Console.ReadLine().ToLower();
                 if (answer == "nej")
                 {
@@ -314,7 +270,7 @@ namespace DatabasUppgiftEntity
                     var inactiveCourses = context.Courses
                         .Where(x => x.Active == false)
                         .ToList();
-                    Console.WriteLine($"Här är lista på alla inaktiva kurser på våran skolan just nu");
+                    Console.WriteLine($"Här är lista på alla inaktiva kurser på våran skolan just nu\n");
                     foreach (var inactiveCourse in inactiveCourses)
                     {
                         Console.WriteLine($"Kursnamn: {inactiveCourse.Name}");
